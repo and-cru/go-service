@@ -1,5 +1,7 @@
 package config
 
+import "os"
+
 type Config struct {
 	DB *DBConfig
 }
@@ -9,17 +11,15 @@ type DBConfig struct {
 	Username string
 	Password string
 	Name     string
-	Charset  string
 }
 
 func GetConfig() *Config {
 	return &Config{
 		DB: &DBConfig{
-			Dialect:  "postgres",
-			Username: "admin",
-			Password: "admin",
-			Name:     "test",
-			Charset:  "utf8",
+			Dialect:  os.Getenv("ENGINE"),
+			Username: os.Getenv("DB_USER"),
+			Password: os.Getenv("DB_PASSWORD"),
+			Name:     os.Getenv("DB_NAME"),
 		},
 	}
 }

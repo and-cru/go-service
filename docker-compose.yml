@@ -6,7 +6,7 @@ services:
       ports:
         - '5432:5432'
       environment: 
-        - POSTGRES_USER=admin
+        - POSTGRES_USER=postgres
         - POSTGRES_PASSWORD=admin
         - POSTGRES_DB=postgres
       volumes:
@@ -16,8 +16,13 @@ services:
       build:
         dockerfile: Dockerfile
         context: .
-        args:
-          - SSH_PRIVATE_KEY
+      restart: unless-stopped
+      environment:
+        - ENGINE=postgres
+        - DB_USER=postgres
+        - DB_PASSWORD=admin
+        - DB_NAME=postgres
+        - DB_HOST=db
       container_name: user-api
       ports:
         - 8080:3000

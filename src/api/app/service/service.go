@@ -9,6 +9,10 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+func HealthChecker(w http.ResponseWriter, r *http.Request) {
+	RespondJSON(w, http.StatusOK, "I am healthy")
+}
+
 func GetAllUsers(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	user := []model.User{}
 	db.Find(&user)

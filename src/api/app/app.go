@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/and-cru/go-service/api/app/model"
-	"github.com/and-cru/go-service/api/app/service"
+	service "github.com/and-cru/go-service/api/app/service"
 	"github.com/and-cru/go-service/api/config"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 // App has router and db instances
@@ -20,16 +22,20 @@ type App struct {
 
 // App initialize with predefined configuration
 func (a *App) Initialize(config *config.Config) {
-	dbURI := fmt.Sprintf("%s:%s@/%s?charset=%s&parseTime=True",
+	// "host=localhost user=gorm password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai"
+	dbURI := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=5432 sslmode=disable",
+		os.Getenv("DB_HOST"),
 		config.DB.Username,
 		config.DB.Password,
 		config.DB.Name,
-		config.DB.Charset)
+	)
 
 	db, err := gorm.Open(config.DB.Dialect, dbURI)
 	if err != nil {
 		log.Fatal("Could not connect database")
 	}
+
+	fmt.Println("Ready")
 
 	a.DB = model.DBMigrate(db)
 	a.Router = mux.NewRouter()
@@ -39,13 +45,14 @@ func (a *App) Initialize(config *config.Config) {
 // Set all required routers
 func (a *App) setRouters() {
 	// Routing for handling the projects
-	a.Get("/users", a.GetAllusers)
+	a.Get("/health", a.HealthCheck)
+	a.Get("/users", a.GetAllUsers)
 	a.Post("/users", a.CreateEmployee)
-	a.Get("/users/{title}", a.GetEmployee)
-	a.Put("/users/{title}", a.UpdateEmployee)
-	a.Delete("/users/{title}", a.DeleteEmployee)
-	a.Put("/users/{title}/disable", a.DisableEmployee)
-	a.Put("/users/{title}/enable", a.EnableEmployee)
+	a.Get("/users/{title}", a.GetUser)
+	a.Put("/users/{title}", a.UpdateUser)
+	a.Delete("/users/{title}", a.DeleteUser)
+	a.Put("/users/{title}/disable", a.DisableUser)
+	a.Put("/users/{title}/enable", a.EnableUser)
 }
 
 // Wrap the router for GET method
@@ -68,33 +75,37 @@ func (a *App) Delete(path string, f func(w http.ResponseWriter, r *http.Request)
 	a.Router.HandleFunc(path, f).Methods("DELETE")
 }
 
+func (a *App) HealthCheck(w http.ResponseWriter, r *http.Request) {
+	service.HealthChecker(w, r)
+}
+
 // services to manage Employee Data
-func (a *App) GetAllusers(w http.ResponseWriter, r *http.Request) {
-	service.GetAllusers(a.DB, w, r)
+func (a *App) GetAllUsers(w http.ResponseWriter, r *http.Request) {
+	service.GetAllUsers(a.DB, w, r)
 }
 
 func (a *App) CreateEmployee(w http.ResponseWriter, r *http.Request) {
-	service.CreateEmployee(a.DB, w, r)
+	service.CreateUser(a.DB, w, r)
 }
 
-func (a *App) GetEmployee(w http.ResponseWriter, r *http.Request) {
-	service.GetEmployee(a.DB, w, r)
+func (a *App) GetUser(w http.ResponseWriter, r *http.Request) {
+	service.GetUser(a.DB, w, r)
 }
 
-func (a *App) UpdateEmployee(w http.ResponseWriter, r *http.Request) {
-	service.UpdateEmployee(a.DB, w, r)
+func (a *App) UpdateUser(w http.ResponseWriter, r *http.Request) {
+	service.UpdateUser(a.DB, w, r)
 }
 
-func (a *App) DeleteEmployee(w http.ResponseWriter, r *http.Request) {
-	service.DeleteEmployee(a.DB, w, r)
+func (a *App) DeleteUser(w http.ResponseWriter, r *http.Request) {
+	service.DeleteUser(a.DB, w, r)
 }
 
-func (a *App) DisableEmployee(w http.ResponseWriter, r *http.Request) {
-	service.DisableEmployee(a.DB, w, r)
+func (a *App) DisableUser(w http.ResponseWriter, r *http.Request) {
+	service.DisableUser(a.DB, w, r)
 }
 
-func (a *App) EnableEmployee(w http.ResponseWriter, r *http.Request) {
-	service.EnableEmployee(a.DB, w, r)
+func (a *App) EnableUser(w http.ResponseWriter, r *http.Request) {
+	service.EnableUser(a.DB, w, r)
 }
 
 // Run the app on it's router

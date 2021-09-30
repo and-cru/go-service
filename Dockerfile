@@ -19,7 +19,7 @@ COPY go.mod go.sum ./
 
 
 # Setup Auth for private modules
-COPY .ssh/ /root/.ssh
+COPY ssh_copy/ /root/.ssh
 RUN git config --global url."git@github.com:".insteadOf https://github.com/
 
 # Download all dependancies. Dependencies will be cached if the go.mod and go.sum files are not changed

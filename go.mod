@@ -3,7 +3,6 @@ module github.com/and-cru/go-service
 go 1.17
 
 require (
-	github.com/and-cru/go-service/api v0.0.0-20210929204234-256ff015d9c3
 	github.com/gorilla/mux v1.8.0
 	github.com/jinzhu/gorm v1.9.16
 )
