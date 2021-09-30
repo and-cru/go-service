@@ -18,7 +18,7 @@ func GetConfig() *Config {
 			Dialect:  "postgres",
 			Username: "admin",
 			Password: "admin",
-			Name:     "user",
+			Name:     "test",
 			Charset:  "utf8",
 		},
 	}
