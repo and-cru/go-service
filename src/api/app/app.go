@@ -47,12 +47,12 @@ func (a *App) setRouters() {
 	// Routing for handling the projects
 	a.Get("/health", a.HealthCheck)
 	a.Get("/users", a.GetAllUsers)
-	a.Post("/users", a.CreateEmployee)
-	a.Get("/users/{title}", a.GetUser)
-	a.Put("/users/{title}", a.UpdateUser)
-	a.Delete("/users/{title}", a.DeleteUser)
-	a.Put("/users/{title}/disable", a.DisableUser)
-	a.Put("/users/{title}/enable", a.EnableUser)
+	a.Post("/users", a.CreateUser)
+	a.Get("/users/{name}", a.GetUser)
+	a.Put("/users/{name}", a.UpdateUser)
+	a.Delete("/users/{name}", a.DeleteUser)
+	a.Put("/users/{name}/disable", a.DisableUser)
+	a.Put("/users/{name}/enable", a.EnableUser)
 }
 
 // Wrap the router for GET method
@@ -84,7 +84,7 @@ func (a *App) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	service.GetAllUsers(a.DB, w, r)
 }
 
-func (a *App) CreateEmployee(w http.ResponseWriter, r *http.Request) {
+func (a *App) CreateUser(w http.ResponseWriter, r *http.Request) {
 	service.CreateUser(a.DB, w, r)
 }
 
