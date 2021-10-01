@@ -2,17 +2,24 @@ package model
 
 import (
 	"github.com/jinzhu/gorm"
+	"github.com/satori/go.uuid"
 
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 type User struct {
-	gorm.Model
-	Name    string  `gorm:"unique" json:"name"`
-	Surname string  `json:"surname"`
-	Age     int     `json:"age"`
-	Status  bool    `json:"status"`
-	Address Address `json:"address"`
+	ID      uuid.UUID `gorm:"unique;primaryKey;type:uuid"`
+	Name    string    `gorm:"unique" json:"name"`
+	Surname string    `json:"surname"`
+	Age     int       `json:"age"`
+	Status  bool      `json:"status"`
+	Address Address   `json:"address"`
+}
+
+func (user *User) BeforeCreate(scope *gorm.Scope) error {
+	uuid := uuid.NewV4()
+
+	return scope.SetColumn("ID", uuid)
 }
 
 func (e *User) Disable() {
@@ -24,10 +31,16 @@ func (p *User) Enable() {
 }
 
 type Address struct {
-	ID      int    `gorm: "unique;primaryKey;autoIncrement" json:"id"`
-	Street  string `json:"street"`
-	City    string `json:"city"`
-	Country string `json:"country"`
+	ID      uuid.UUID `gorm:"unique;primaryKey;autoIncrement" json:"id"`
+	Street  string    `json:"street"`
+	City    string    `json:"city"`
+	Country string    `json:"country"`
+}
+
+func (address *Address) BeforeCreate(scope *gorm.Scope) error {
+	uuid := uuid.NewV4()
+
+	return scope.SetColumn("ID", uuid)
 }
 
 // DBMigrate will create and migrate the tables, and then make the some relationships if necessary
