@@ -12,6 +12,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/urfave/negroni"
 )
 
 // App has router and db instances
@@ -34,7 +35,6 @@ func (a *App) Initialize(config *config.Config) {
 	if err != nil {
 		log.Fatal("Could not connect database")
 	}
-
 	fmt.Println("Ready")
 
 	a.DB = model.DBMigrate(db)
@@ -110,5 +110,10 @@ func (a *App) EnableUser(w http.ResponseWriter, r *http.Request) {
 
 // Run the app on it's router
 func (a *App) Run(host string) {
-	log.Fatal(http.ListenAndServe(host, a.Router))
+	//
+	n := negroni.New()
+	n.Use(negroni.NewLogger())
+	n.UseHandler(a.Router)
+
+	log.Fatal(http.ListenAndServe(host, n))
 }

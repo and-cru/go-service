@@ -12,7 +12,7 @@ RUN apk update && apk upgrade && \
 LABEL maintainer="Pedre Viljoen (pedre@andcru.io)"
 
 # Set the Current Working Directory inside the container
-WORKDIR /src
+WORKDIR /go-service
 
 # Copy go mod and sum files
 COPY go.mod go.sum ./
