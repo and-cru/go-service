@@ -10,9 +10,9 @@ import (
 	service "github.com/and-cru/go-service/api/app/service"
 	"github.com/and-cru/go-service/api/config"
 	"github.com/gorilla/mux"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/urfave/negroni"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 // App has router and db instances
@@ -31,7 +31,7 @@ func (a *App) Initialize(config *config.Config) {
 		config.DB.Name,
 	)
 
-	db, err := gorm.Open(config.DB.Dialect, dbURI)
+	db, err := gorm.Open(postgres.Open(dbURI), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Could not connect database")
 	}

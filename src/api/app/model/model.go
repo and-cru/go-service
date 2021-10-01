@@ -3,25 +3,23 @@ package model
 import (
 	"time"
 
-	"github.com/jinzhu/gorm"
-
-	_ "github.com/jinzhu/gorm/dialects/postgres"
+	_ "gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 type Base struct {
-	ID        uint       `gorm:"unique;primaryKey;autoIncrement" json:"id"`
-	CreatedAt time.Time  `gorm:"autoUpdateTime:milli" json:"created_at"`
-	UpdatedAt time.Time  `gorm:"autoUpdateTime:milli" json:"updated_at"`
+	CreatedAt time.Time  `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt time.Time  `gorm:"autoUpdateTime" json:"updated_at"`
 	DeletedAt *time.Time `gorm:"default:null" json:"deleted_at,omitempty"`
 }
 
 type User struct {
 	Base
-	Name    string   `gorm:"unique" json:"name"`
-	Surname string   `json:"surname"`
-	Age     int      `json:"age"`
-	Status  bool     `json:"status"`
-	Address *Address `json:"address,omitempty"`
+	ID      uint   `gorm:"unique;primaryKey;autoIncrement" json:"id"`
+	Name    string `gorm:"unique" json:"name"`
+	Surname string `json:"surname"`
+	Age     int    `json:"age"`
+	Status  bool   `json:"status"`
 }
 
 func (e *User) Disable() {
@@ -34,9 +32,11 @@ func (p *User) Enable() {
 
 type Address struct {
 	Base
+	ID      uint   `gorm:"unique;primaryKey;autoIncrement" json:"id"`
 	Street  string `json:"street"`
 	City    string `json:"city"`
 	Country string `json:"country"`
+	User    *User  `gorm:"foreignKey:ID" json:"user,omitempty"`
 }
 
 // DBMigrate will create and migrate the tables, and then make the some relationships if necessary

@@ -6,7 +6,7 @@ import (
 
 	"github.com/and-cru/go-service/api/app/model"
 	"github.com/gorilla/mux"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 func HealthChecker(w http.ResponseWriter, r *http.Request) {
