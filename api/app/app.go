@@ -23,7 +23,7 @@ type App struct {
 
 // App initialize with predefined configuration
 func (a *App) Initialize(config *config.Config) {
-	// "host=localhost user=gorm password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai"
+	// Create DB URI
 	dbURI := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=5432 sslmode=disable",
 		os.Getenv("DB_HOST"),
 		config.DB.Username,
@@ -31,28 +31,36 @@ func (a *App) Initialize(config *config.Config) {
 		config.DB.Name,
 	)
 
+	// Connect to DB
 	db, err := gorm.Open(postgres.Open(dbURI), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Could not connect database")
 	}
 	fmt.Println("Ready")
 
-	a.DB = model.DBMigrate(db)
+	// auto migrate for local development, migrations for staging and prod
+	if os.Getenv("ENV") == "develop" {
+		a.DB = model.DBMigrate(db)
+	} else {
+		a.DB = db
+	}
+
+	// create and set router
 	a.Router = mux.NewRouter()
 	a.setRouters()
 }
 
 // Set all required routers
 func (a *App) setRouters() {
-	// Routing for handling the projects
+	// Health check for svc
 	a.Get("/health", a.HealthCheck)
+
+	// CRUD operation routing
 	a.Get("/users", a.GetAllUsers)
 	a.Post("/users", a.CreateUser)
 	a.Get("/users/{name}", a.GetUser)
 	a.Put("/users/{name}", a.UpdateUser)
 	a.Delete("/users/{name}", a.DeleteUser)
-	a.Put("/users/{name}/disable", a.DisableUser)
-	a.Put("/users/{name}/enable", a.EnableUser)
 }
 
 // Wrap the router for GET method
