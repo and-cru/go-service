@@ -113,6 +113,7 @@ func (a *App) Run(host string) {
 	//
 	n := negroni.New()
 	n.Use(negroni.NewLogger())
+	n.Use(NewOrigin("*"))
 	n.UseHandler(a.Router)
 
 	log.Fatal(http.ListenAndServe(host, n))
