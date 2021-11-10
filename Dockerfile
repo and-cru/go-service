@@ -14,8 +14,8 @@ LABEL maintainer="Pedre Viljoen (pedre@andcru.io)"
 # Set the Current Working Directory inside the container
 WORKDIR /go-service
 
-# Copy go mod and sum files
-COPY go.mod go.sum ./
+# Copy go.mod, go.sum & main.go files
+COPY go.mod go.sum main.go ./
 
 
 # Setup Auth for private modules
@@ -26,7 +26,7 @@ RUN git config --global url."git@github.com:".insteadOf https://github.com/
 RUN go mod download
 
 # Copy the source from the current directory to the Working Directory inside the container
-COPY src/ .
+COPY api/ ./api
 
 # Build the Go app
 RUN go build -o main .
